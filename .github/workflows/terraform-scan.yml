@@ -1,0 +1,36 @@
+name: Semgrep Terraform Scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  semgrep:
+    name: Run Semgrep on Terraform Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Semgrep (Terraform Rules)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/terraform
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Slack Notification
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": ":warning: Semgrep scan completed on GhostCMS Terraform code in branch `${{ github.ref_name }}`.\nView results: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
