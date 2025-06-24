@@ -13,8 +13,6 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-
-
 # ----- swaps 1 GB from storage to memory -----
 
 sudo fallocate -l 1G /swapfile
@@ -26,9 +24,14 @@ sudo swapon /swapfile
 
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
-Run Ghost with SQLite (default for development)
-sudo docker run -d \
-  --name ghost \
-  -e NODE_ENV=development \
-  -p 80:2368 \
-  ghost
+# ----- To add the docker to the ubuntu groups -----
+
+sudo usermod -aG docker ubuntu
+newgrp docker
+
+# # Run Ghost with SQLite (default for development)
+# sudo docker run -d \
+#   --name ghost \
+#   -e NODE_ENV=development \
+#   -p 80:2368 \
+#   ghost

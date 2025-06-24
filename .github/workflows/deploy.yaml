@@ -35,3 +35,66 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
+  Copy-docker-compose-To-EC2:
+    needs: terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get EC2 IP from Terraform output
+        id: ec2_ip
+        run: |
+          ip=$(terraform output -raw ec2_public_ip)
+          echo "EC2_HOST=$ip" >> $GITHUB_ENV
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: |
+            docker-compose.yaml
+            nginx
+            certbot
+          target: "/home/${{ secrets.EC2_USER }}/"
+
+  Docker-compose_Deployment_with_Certbot:
+    needs: Copy-docker-compose-To-EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |        
+            docker compose up -d ghost nginx
+
+            echo "Waiting for nginx container to be healthy..."
+            sleep 5 
+
+            # Wait until nginx is running (max 30s)
+            for i in {1..6}; do
+              STATUS=$(docker inspect -f '{{.State.Running}}' nginx 2>/dev/null)
+              if [ "$STATUS" = "true" ]; then
+                echo "Nginx is running"
+                break
+              fi
+              echo "Waiting for nginx to start..."
+              sleep 5
+            done
+
+            echo "Running certbot to request HTTPS cert..."
+            docker compose run --rm certbot
+
+            echo "Restarting containers to apply HTTPS config..."
+            docker compose restart
+
