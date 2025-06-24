@@ -43,6 +43,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Get EC2 IP from Terraform output
         id: ec2_ip
         run: |
