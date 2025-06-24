@@ -13,4 +13,9 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-sudo docker run -d --name ghost -p 80:2368 ghost
+# Run Ghost with SQLite (default for development)
+sudo docker run -d \
+  --name ghost \
+  -e NODE_ENV=development \
+  -p 80:2368 \
+  ghost
