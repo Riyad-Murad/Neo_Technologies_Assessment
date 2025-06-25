@@ -59,27 +59,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Debug IP from terraform output
-      run: echo "EC2 IP is '${{ needs.terraform.outputs.ec2_ip }}'"
-
-    - name: Show current directory and list files (for debugging)
-      run: |
-        pwd
-        ls -al
-        ls -al nginx
-        test -f docker-compose.yaml || echo "docker-compose.yaml NOT FOUND"
-        test -d nginx || echo "nginx folder NOT FOUND"
-
     - name: Prepare tarball
       run: |
         tar -czf deploy_files.tar.gz docker-compose.yaml nginx
-
-    - name: Validate tarball contents
-      run: tar -tzf deploy_files.tar.gz
-
-    - name: Debug SCP host
-      run: | 
-        echo "SCP Host: ${{ needs.terraform.outputs.ec2_ip }}"
 
     - name: Copy tarball to EC2
       uses: appleboy/scp-action@v1
@@ -92,7 +74,7 @@ jobs:
 
   deploy-docker-ghost:
     name: Run Docker Compose + Certbot
-    needs: copy-files-to-ec2
+    needs: [terraform, copy-files-to-ec2]
     runs-on: ubuntu-latest
 
     steps:
