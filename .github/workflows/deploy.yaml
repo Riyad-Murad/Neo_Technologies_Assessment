@@ -56,28 +56,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: List files and nginx folder contents
-        run: |
-          pwd
-          ls -al
-          ls -al nginx
+    - name: Debug IP from terraform output
+      run: echo "EC2 IP is '${{ needs.terraform.outputs.ec2_ip }}'"
 
-      - name: Prepare tarball
-        run: |
-          tar -czf deploy_files.tar.gz docker-compose.yaml nginx
+    - name: Show current directory and list files (for debugging)
+      run: |
+        pwd
+        ls -al
+        ls -al nginx
+        test -f docker-compose.yaml || echo "docker-compose.yaml NOT FOUND"
+        test -d nginx || echo "nginx folder NOT FOUND"
 
-      - name: Copy tarball to EC2
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ needs.terraform.outputs.ec2_ip }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: deploy_files.tar.gz
-          target: "/home/${{ secrets.EC2_USER }}/"
+    - name: Prepare tarball
+      run: |
+        tar -czf deploy_files.tar.gz docker-compose.yaml nginx
 
+    - name: Validate tarball contents
+      run: tar -tzf deploy_files.tar.gz
+
+    - name: Debug SCP host
+      run: | 
+        echo "SCP Host: ${{ needs.terraform.outputs.ec2_ip }}"
+
+    - name: Copy tarball to EC2
+      uses: appleboy/scp-action@v1
+      with:
+        host: ${{ needs.terraform.outputs.ec2_ip }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        source: deploy_files.tar.gz
+        target: "/home/${{ secrets.EC2_USER }}/"
   deploy-docker-ghost:
     name: Run Docker Compose + Certbot
     needs: copy-files-to-ec2
