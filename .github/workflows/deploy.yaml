@@ -39,12 +39,11 @@ jobs:
           set -e # will terminate immediately in case an error occured
           set -x # will print each line executed
 
-          echo "Terraform binary: $TERRAFORM_CLI_PATH"
-          ls -l $TERRAFORM_CLI_PATH
-
+          echo "Terraform binary dir: $TERRAFORM_CLI_PATH"
           echo "Retrieving EC2 public IP from Terraform output..."
 
-          ip=$($TERRAFORM_CLI_PATH output -raw ec2_public_ip | tr -d '\r')
+          # ip=$($TERRAFORM_CLI_PATH output -raw ec2_public_ip | tr -d '\r')
+          ip=$("$TERRAFORM_CLI_PATH/terraform" output -raw ec2_public_ip | tr -d '\r')
 
           echo "Raw IP from terraform output:"
           echo "$ip"
