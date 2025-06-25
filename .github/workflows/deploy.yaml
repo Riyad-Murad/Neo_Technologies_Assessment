@@ -59,6 +59,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: List files for debugging
+        run: |
+          pwd
+          ls -al
+          ls -al nginx
+          ls -al certbot
+
       - name: Copy files to EC2
         uses: appleboy/scp-action@v1
         with:
