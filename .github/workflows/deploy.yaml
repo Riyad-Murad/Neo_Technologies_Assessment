@@ -36,13 +36,6 @@ jobs:
       - name: Get EC2 IP from Terraform output
         id: get_ec2_ip
         run: |
-          # ip=$("$TERRAFORM_CLI_PATH/terraform" output -raw ec2_public_ip 2>/dev/null | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
-          # echo "ec2_ip=$ip" >> $GITHUB_OUTPUT
-
-          raw_output=$("$TERRAFORM_CLI_PATH/terraform" output -raw ec2_public_ip 2>/dev/null)
-          echo "Raw terraform output:"
-          echo "$raw_output"
-
           ip=$(
             "$TERRAFORM_CLI_PATH/terraform" output -raw ec2_public_ip 2>/dev/null | \
             grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | \
@@ -93,9 +86,10 @@ jobs:
       with:
         host: ${{ needs.terraform.outputs.ec2_ip }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
+        key: ${{ secrets.EC2_KEY_DEPLOY }}
         source: deploy_files.tar.gz
         target: "/home/${{ secrets.EC2_USER }}/"
+
   deploy-docker-ghost:
     name: Run Docker Compose + Certbot
     needs: copy-files-to-ec2
@@ -110,7 +104,7 @@ jobs:
         with:
           host: ${{ needs.terraform.outputs.ec2_ip }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY_DEPLOY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
 
