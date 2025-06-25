@@ -223,7 +223,7 @@ Enter a hostname and choose one of the free domains available. As for the IP Tar
 
    > Ensure `proxy_pass http://ghost:2368;` matches container service name & port
 
-**Make sure**
+**NOTE: Make sure to copy the EC2 public IP and paste it to noip in the hostname before the 3rd job in the workflow is running so the certbot certificate will be generated**
 
 ## 🎨 Deployment Result
 
