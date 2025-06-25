@@ -63,13 +63,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: List files for debugging
-        run: |
-          pwd
-          ls -al
-          ls -al nginx
-          ls -al certbot
-
       - name: Copy files to EC2
         uses: appleboy/scp-action@v1
         with:
@@ -79,7 +72,6 @@ jobs:
           source: |
             docker-compose.yaml
             nginx
-            certbot
           target: "/home/${{ secrets.EC2_USER }}/"
 
   deploy-docker-ghost:
@@ -99,6 +91,9 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
+
+            mkdir -p certbot/www
+            mkdir -p certbot/conf
 
             echo "Starting Ghost and Nginx containers..."
             docker compose up -d ghost nginx
