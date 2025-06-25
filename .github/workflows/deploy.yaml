@@ -115,7 +115,7 @@ jobs:
 
             chmod +x nginx/startup.sh
 
-            docker compose up -d ghost nginx
+            sudo docker compose up -d ghost nginx
 
             echo "Waiting for nginx container to be healthy..."
             sleep 5
@@ -131,5 +131,5 @@ jobs:
               sleep 5
             done
 
-            docker compose run --rm certbot
-            docker compose restart
+            sudo docker compose run --rm certbot
+            sudo docker compose restart
