@@ -12,7 +12,9 @@ This repository contains a secure, automated infrastructure deployment of [Ghost
 
 ## 🧱 Architecture Overview
 
-![Architecture Diagram](Diagrams/Ghost_Architecture.jpg)
+<p align="center">
+  <img src="Diagrams/Ghost_Architecture.jpg" alt="Architecture Diagram" />
+</p>
 
 - AWS VPC with public subnet
 - EC2 instance (Ubuntu) provisioned in the Frankfurt region (`eu-central-1`)
@@ -147,7 +149,7 @@ After that, make sure to click on the second option "Commit CI configuration fil
 | --------------------------------------- | ------------------------------------- |
 | ![Commit CI conf file](Diagrams/V1/Semgrep/5\)%20Commit%20CI%20configuration%20file.png) | ![Scan Complete](Diagrams/V1/Semgrep/6\)%20Scan%20Complete.png) |
 
-After Pushing the code to the main repo and the code being deployed, we can access the container using the [Public IP]() which will display a screen similar to the below picture.
+After Pushing the code to the main repo and the code being deployed, we can access the container using the [Public IP](http://3.70.53.72) which will display a screen similar to the below picture.
 
 ![Ghost Deployed](Diagrams/V1/Public%20IP%20EC2%20Ghost%20deployed.png)
 
@@ -220,6 +222,8 @@ Enter a hostname and choose one of the free domains available. As for the IP Tar
 
 
    > Ensure `proxy_pass http://ghost:2368;` matches container service name & port
+
+**Make sure**
 
 ## 🎨 Deployment Result
 
