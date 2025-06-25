@@ -1,5 +1,11 @@
 # 🚀 Neo Technologies – DevSecOps Assessment (Ghost CMS Deployment)
 
+[![Terraform](https://img.shields.io/badge/Terraform-1.6.0-623CE4?style=flat&logo=terraform)](https://www.terraform.io/)
+[![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?style=flat&logo=amazon-aws)](https://aws.amazon.com/)
+[![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat&logo=docker)](https://www.docker.com/)
+[![Ghost](https://img.shields.io/badge/Ghost-CMS-738A94?style=flat&logo=ghost)](https://ghost.org/)
+[![Security](https://img.shields.io/badge/Security-Semgrep-00A4CC?style=flat&logo=semgrep)](https://semgrep.dev/)
+
 This repository contains a secure, automated infrastructure deployment of [Ghost CMS](https://ghost.org/) using **Terraform**, **Docker**, and **GitHub Actions**. It is designed according to DevSecOps best practices, including:
 
 - Infrastructure as Code (IaC) via Terraform
