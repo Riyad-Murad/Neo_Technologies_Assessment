@@ -99,7 +99,7 @@ jobs:
             cd /home/${{ secrets.EC2_USER }}
 
             # Wait for Docker to be ready (max 60s)
-            for i in {1..12}; do
+            for i in {1..10}; do
               if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
                 echo "Docker is available!"
                 break
@@ -109,6 +109,7 @@ jobs:
             done
 
             tar -xzf deploy_files.tar.gz
+            rm deploy_files.tar.gz
 
             mkdir -p certbot/www
             mkdir -p certbot/conf
@@ -121,7 +122,7 @@ jobs:
             sleep 5
 
             # Wait until nginx is running (max 30s)
-            for i in {1..6}; do
+            for i in {1..5}; do
               STATUS=$(docker inspect -f '{{.State.Running}}' nginx 2>/dev/null)
               if [ "$STATUS" = "true" ]; then
                 echo "Nginx is running"
