@@ -90,6 +90,16 @@ jobs:
           script: |
             cd /home/${{ secrets.EC2_USER }}
 
+            # Wait for Docker to be ready (max 60s)
+            for i in {1..12}; do
+              if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+                echo "Docker is available!"
+                break
+              fi
+              echo "Waiting for Docker to be available..."
+              sleep 5
+            done
+
             tar -xzf deploy_files.tar.gz
 
             mkdir -p certbot/www
@@ -97,7 +107,7 @@ jobs:
 
             chmod +x nginx/startup.sh
 
-            sudo docker compose up -d ghost nginx
+            docker compose up -d ghost nginx
 
             echo "Waiting for nginx container to be healthy..."
             sleep 5
@@ -113,5 +123,5 @@ jobs:
               sleep 5
             done
 
-            sudo docker compose run --rm certbot
-            sudo docker compose restart
+            docker compose run --rm certbot
+            docker compose restart
