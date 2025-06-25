@@ -55,23 +55,27 @@ jobs:
     needs: terraform
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Copy files to EC2
+      - name: List files and nginx folder contents
+        run: |
+          pwd
+          ls -al
+          ls -al nginx
+
+      - name: Prepare tarball
+        run: |
+          tar -czf deploy_files.tar.gz docker-compose.yaml nginx
+
+      - name: Copy tarball to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ needs.terraform.outputs.ec2_ip }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: |
-            docker-compose.yaml
-            nginx
+          source: deploy_files.tar.gz
           target: "/home/${{ secrets.EC2_USER }}/"
 
   deploy-docker-ghost:
@@ -91,6 +95,8 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
+
+            tar -xzf deploy_files.tar.gz
 
             mkdir -p certbot/www
             mkdir -p certbot/conf
